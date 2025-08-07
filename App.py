@@ -8,6 +8,9 @@ def predict_diabetes(bmi, age, gen_hlth, high_bp):
     scaled_age = (age - 1) / 12      # Age groups 1-13 → 0-1
     scaled_health = (gen_hlth - 1) / 4
     
+    # Debugging: Print normalized values
+    print(f"Scaled BMI: {scaled_bmi}, Scaled Age: {scaled_age}, Scaled Health: {scaled_health}, High BP: {high_bp}")
+
     # Weighted factors (sum < 1)
     risk_score = (
         (scaled_bmi * 0.4) + 
@@ -16,6 +19,9 @@ def predict_diabetes(bmi, age, gen_hlth, high_bp):
         (high_bp * 0.1)
     )
     
+    # Debugging: Print risk score before sigmoid
+    print(f"Risk Score (before sigmoid): {risk_score}")
+
     # Adjusted sigmoid to prevent extremes
     probability = 1 / (1 + np.exp(-10 * (risk_score - 0.5)))
     
@@ -29,14 +35,14 @@ with st.form("prediction_form"):
     col1, col2 = st.columns(2)
     
     with col1:
-        bmi = st.slider("BMI", 12.0, 50.0, 25.0, step=0.1)
-        age = st.slider("Age Group", 1, 13, 7,
+        bmi = st.slider("BMI", 12.0, 50.0, 22.0, step=0.1)
+        age = st.slider("Age Group", 1, 13, 3,
                        help="1:18-24, 2:25-29, ..., 13:80+")
     
     with col2:
         gen_hlth = st.select_slider("General Health", 
                                   options=[1,2,3,4,5],
-                                  value=3,
+                                  value=2,
                                   help="1=Excellent, 5=Poor")
         high_bp = st.radio("High BP", ["No", "Yes"])
     
