@@ -3,18 +3,24 @@ import numpy as np
 
 def predict_diabetes(bmi, age, gen_hlth, high_bp):
     """Realistic prediction with proper scaling"""
+
+    weights = {
+        'BMI': 0.31,      # 0.543 / (0.634+0.543+0.424+0.363)
+        'Age': 0.24,       # 0.424 / sum
+        'GenHlth': 0.36,   # 0.634 / sum (most important)
+        'HighBP': 0.21     # 0.363 / sum
+    }
     
     scaled_bmi = min(bmi, 40) / 40  
     scaled_age = (age - 1) / 12      
     scaled_health = (gen_hlth - 1) / 4  
     
     risk_score = (
-        (scaled_bmi * 0.3) + 
-        (scaled_age * 0.25) + 
-        (scaled_health * 0.25) + 
-        (high_bp * 0.2)
+        (scaled_bmi * weights['BMI']) + 
+        (scaled_age * weights['Age']) + 
+        (scaled_health * weights['GenHlth']) + 
+        (high_bp * weights['HighBP'])
     )
-    
     probability = 1 / (1 + np.exp(-6 * (risk_score - 0.6)))
     
     return min(max(probability, 0.05), 0.95)
@@ -86,3 +92,4 @@ with st.form("prediction_form"):
             st.info("Recommendations: Balanced diet, regular exercise, maintain healthy weight")
 
 st.caption("Note: This is a screening tool, not a medical diagnosis. Always consult a healthcare professional for personalized advice.")
+
