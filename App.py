@@ -6,17 +6,18 @@ def predict_diabetes(bmi, age, gen_hlth, high_bp):
     # Normalize inputs (0-1 range)
     scaled_bmi = min(bmi, 40) / 40  # Cap BMI at 40 for calculation
     scaled_age = (age - 1) / 12      # Age groups 1-13 → 0-1
-    scaled_health = (gen_hlth - 1) / 4
-    
+    scaled_health = (gen_hlth - 1) / 4  # General health from 1 to 5 → 0 to 1
+    scaled_high_bp = high_bp * 0.1  # High BP as binary (0 or 1) scaled to 0.1
+
     # Debugging: Print normalized values
-    print(f"Scaled BMI: {scaled_bmi}, Scaled Age: {scaled_age}, Scaled Health: {scaled_health}, High BP: {high_bp}")
+    print(f"Scaled BMI: {scaled_bmi}, Scaled Age: {scaled_age}, Scaled Health: {scaled_health}, High BP: {scaled_high_bp}")
 
     # Weighted factors (sum < 1)
     risk_score = (
         (scaled_bmi * 0.4) + 
         (scaled_age * 0.3) + 
         (scaled_health * 0.2) + 
-        (high_bp * 0.1)
+        scaled_high_bp
     )
     
     # Debugging: Print risk score before sigmoid
