@@ -4,7 +4,7 @@ import numpy as np
 def predict_diabetes(bmi, age, gen_hlth, high_bp):
     """Realistic prediction with proper scaling"""
     # Normalize inputs (0-1 range)
-    scaled_bmi = (min(bmi, 40) / 40  # Cap BMI at 40 for calculation
+    scaled_bmi = min(bmi, 40) / 40  # Cap BMI at 40 for calculation
     scaled_age = (age - 1) / 12      # Age groups 1-13 → 0-1
     scaled_health = (gen_hlth - 1) / 4
     
@@ -14,6 +14,7 @@ def predict_diabetes(bmi, age, gen_hlth, high_bp):
         (scaled_age * 0.3) + 
         (scaled_health * 0.2) + 
         (high_bp * 0.1)
+    )
     
     # Adjusted sigmoid to prevent extremes
     probability = 1 / (1 + np.exp(-10 * (risk_score - 0.5)))
