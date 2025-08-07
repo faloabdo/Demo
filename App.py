@@ -29,15 +29,45 @@ with st.form("prediction_form"):
     col1, col2 = st.columns(2)
     
     with col1:
-        bmi = st.slider("BMI", 12.0, 50.0, 25.0, step=0.1)
+        # BMI input with categories
+        bmi = st.slider("Body Mass Index (BMI)", 12.0, 50.0, 25.0, step=0.1,
+                       help="BMI Categories:\n"
+                            "• Underweight: <18.5\n"
+                            "• Normal weight: 18.5-24.9\n"
+                            "• Overweight: 25-29.9\n"
+                            "• Obesity: 30+")
+        
+        # Age group with detailed mapping
         age = st.slider("Age Group", 1, 13, 7,
-                       help="1: 18-24, 2: 25-29, 3: 30-34, 4: 35-39, 5: 40-44, 6: 45-49, 7: 50-54, 8: 55-59, 9: 60-64, 10: 65-69, 11: 70-74, 12: 75-79, 13: 80+")
+                       help="Age Group Mapping:\n"
+                            "1: 18-24 years\n"
+                            "2: 25-29 years\n"
+                            "3: 30-34 years\n"
+                            "4: 35-39 years\n"
+                            "5: 40-44 years\n"
+                            "6: 45-49 years\n"
+                            "7: 50-54 years\n"
+                            "8: 55-59 years\n"
+                            "9: 60-64 years\n"
+                            "10: 65-69 years\n"
+                            "11: 70-74 years\n"
+                            "12: 75-79 years\n"
+                            "13: 80+ years")
     
     with col2:
-        gen_hlth = st.select_slider("General Health", 
+        # General health with clear labels
+        gen_hlth = st.select_slider("General Health Rating", 
                                   options=[1, 2, 3, 4, 5],
                                   value=3,
-                                  help="1 = Excellent, 2 = Very Good, 3 = Good, 4 = Fair, 5 = Poor")
+                                  format_func=lambda x: {
+                                      1: "1 - Excellent",
+                                      2: "2 - Very Good",
+                                      3: "3 - Good",
+                                      4: "4 - Fair",
+                                      5: "5 - Poor"
+                                  }[x],
+                                  help="How would you rate your general health?")
+        
         high_bp = st.radio("High Blood Pressure", ["No", "Yes"])
     
     submitted = st.form_submit_button("Calculate Risk")
@@ -53,15 +83,43 @@ with st.form("prediction_form"):
         # Visual indicator
         st.progress(risk)
         
-        # Interpretation
+        # Interpretation with color-coded box
         if risk > 0.7:
             st.error("High risk - Please consult a healthcare provider")
-            st.info("Recommendations: Regular blood sugar monitoring, lifestyle changes, and medical consultation")
+            with st.expander("Recommendations"):
+                st.write("""
+                - Schedule a doctor's appointment for blood sugar testing
+                - Monitor blood sugar levels regularly
+                - Adopt a diabetes-friendly diet (low sugar, high fiber)
+                - Aim for 150 minutes of exercise per week
+                - Lose 5-10% of body weight if overweight
+                """)
         elif risk > 0.4:
             st.warning("Moderate risk - Monitor your health regularly")
-            st.info("Recommendations: Improve diet, increase physical activity, annual check-ups")
+            with st.expander("Recommendations"):
+                st.write("""
+                - Get annual health check-ups
+                - Maintain healthy weight (BMI <25)
+                - Exercise 30 minutes/day, 5 days/week
+                - Limit processed foods and sugary drinks
+                - Quit smoking if applicable
+                """)
         else:
             st.success("Low risk - Maintain healthy habits")
-            st.info("Recommendations: Balanced diet, regular exercise, maintain healthy weight")
+            with st.expander("Recommendations"):
+                st.write("""
+                - Continue balanced diet with plenty of vegetables
+                - Maintain regular physical activity
+                - Get sufficient sleep (7-9 hours/night)
+                - Manage stress through meditation or hobbies
+                - Annual check-up to monitor health
+                """)
 
-st.caption("Note: This is a screening tool, not a medical diagnosis. Always consult a healthcare professional for personalized advice.")
+# Footer with important notes
+st.divider()
+st.caption("""
+**Note:** This tool provides a risk estimate based on statistical patterns. \
+It is not a medical diagnosis. Many factors contribute to diabetes risk, \
+including family history, genetics, and lifestyle factors not captured here. \
+Always consult a healthcare professional for personalized medical advice.
+""")
