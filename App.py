@@ -39,7 +39,7 @@ with st.form("prediction_form"):
         # Age group with detailed mapping
         age = st.slider("Age Group", 1, 13, 7,
                        help="Age Group Mapping:\n"
-                            "1: 18-24 years<brn"
+                            "1: 18-24 years\n"
                             "2: 25-29 years\n"
                             "3: 30-34 years\n"
                             "4: 35-39 years\n"
@@ -94,4 +94,5 @@ with st.form("prediction_form"):
             st.info("Recommendations: Balanced diet, regular exercise, maintain healthy weight")
 
 st.caption("Note: This is a screening tool, not a medical diagnosis. Always consult a healthcare professional for personalized advice.")
+
 
