@@ -4,7 +4,7 @@ import numpy as np
 def predict_diabetes(bmi, age, gen_hlth, high_bp):
     """Refined prediction based on model insights with proper scaling"""
     # Non-linear age risk mapping (aligned with RF thresholds)
-    age_risk = {
+    age_risk_map = {
         1: 0.1,   # 18-24
         2: 0.15,  # 25-29
         3: 0.2,   # 30-34
@@ -18,7 +18,8 @@ def predict_diabetes(bmi, age, gen_hlth, high_bp):
         11: 0.8,  # 70-74
         12: 0.85, # 75-79
         13: 0.9   # 80+
-    }[age]
+    }
+    age_risk = age_risk_map[age]
     
     # Feature weights (sum to 1) based on model importance
     risk_score = (
@@ -26,11 +27,10 @@ def predict_diabetes(bmi, age, gen_hlth, high_bp):
         (age_risk * 0.15) +              # Age (15% weight, non-linear)
         ((gen_hlth-1)/4 * 0.35) +        # GenHlth (35% weight, dominant)
         (high_bp * 0.25)                 # HighBP (25% weight)
-    )
     
     # Calibrated sigmoid (gentler curve)
     probability = 1 / (1 + np.exp(-4 * (risk_score - 0.5)))
-    return min(max(probability, 0.05), 0.95)  # Clamped to 5%-95%
+    return min(max(probability, 0.05), 0.95), age_risk  # Return both probability and age_risk
 
 # Streamlit UI Configuration
 st.set_page_config(page_title="Diabetes Risk Calculator", layout="wide")
@@ -82,7 +82,7 @@ with st.form("diabetes_risk_form"):
     
     if submitted:
         high_bp_num = 1 if high_bp == "Yes" else 0
-        risk = predict_diabetes(bmi, age, gen_hlth, high_bp_num)
+        risk, age_risk = predict_diabetes(bmi, age, gen_hlth, high_bp_num)  # Unpack both returns
         
         # Results Display
         st.subheader("Results")
@@ -107,25 +107,13 @@ with st.form("diabetes_risk_form"):
         st.subheader("Clinical Guidance")
         if risk > 0.7:
             st.error("**High Risk** - Strongly recommend:")
-            st.markdown("""
-            - Immediate physician consultation
-            - Fasting blood glucose test
-            - Lifestyle intervention program
-            """)
+            st.info("Recommendations: Regular blood sugar monitoring, lifestyle changes, and medical consultation")
         elif risk > 0.4:
             st.warning("**Moderate Risk** - Recommended actions:")
-            st.markdown("""
-            - Annual glucose screening
-            - Weight management
-            - 150+ mins weekly exercise
-            """)
+            st.info("Recommendations: Improve diet, increase physical activity, annual check-ups")
         else:
             st.success("**Low Risk** - Maintenance suggestions:")
-            st.markdown("""
-            - Balanced diet
-            - Regular physical activity
-            - Periodic health checkups
-            """)
+            st.info("Recommendations: Balanced diet, regular exercise, maintain healthy weight")
 
 # Footer
 st.markdown("---")
