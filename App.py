@@ -29,7 +29,6 @@ with st.form("prediction_form"):
     col1, col2 = st.columns(2)
     
     with col1:
-        # BMI input with categories
         bmi = st.slider("Body Mass Index (BMI)", 12.0, 50.0, 25.0, step=0.1,
                        help="BMI Categories:\n"
                             "• Underweight: <18.5\n"
@@ -56,7 +55,7 @@ with st.form("prediction_form"):
     
     with col2:
         # General health with clear labels
-        gen_hlth = st.select_slider("General Health Rating", 
+        gen_hlth = st.select_slider("General Health", 
                                   options=[1, 2, 3, 4, 5],
                                   value=3,
                                   format_func=lambda x: {
@@ -66,7 +65,7 @@ with st.form("prediction_form"):
                                       4: "4 - Fair",
                                       5: "5 - Poor"
                                   }[x],
-                                  help="How would you rate your general health?")
+                                  help="1 = Excellent, 2 = Very Good, 3 = Good, 4 = Fair, 5 = Poor")
         
         high_bp = st.radio("High Blood Pressure", ["No", "Yes"])
     
@@ -83,43 +82,15 @@ with st.form("prediction_form"):
         # Visual indicator
         st.progress(risk)
         
-        # Interpretation with color-coded box
+        # Interpretation
         if risk > 0.7:
             st.error("High risk - Please consult a healthcare provider")
-            with st.expander("Recommendations"):
-                st.write("""
-                - Schedule a doctor's appointment for blood sugar testing
-                - Monitor blood sugar levels regularly
-                - Adopt a diabetes-friendly diet (low sugar, high fiber)
-                - Aim for 150 minutes of exercise per week
-                - Lose 5-10% of body weight if overweight
-                """)
+            st.info("Recommendations: Regular blood sugar monitoring, lifestyle changes, and medical consultation")
         elif risk > 0.4:
             st.warning("Moderate risk - Monitor your health regularly")
-            with st.expander("Recommendations"):
-                st.write("""
-                - Get annual health check-ups
-                - Maintain healthy weight (BMI <25)
-                - Exercise 30 minutes/day, 5 days/week
-                - Limit processed foods and sugary drinks
-                - Quit smoking if applicable
-                """)
+            st.info("Recommendations: Improve diet, increase physical activity, annual check-ups")
         else:
             st.success("Low risk - Maintain healthy habits")
-            with st.expander("Recommendations"):
-                st.write("""
-                - Continue balanced diet with plenty of vegetables
-                - Maintain regular physical activity
-                - Get sufficient sleep (7-9 hours/night)
-                - Manage stress through meditation or hobbies
-                - Annual check-up to monitor health
-                """)
+            st.info("Recommendations: Balanced diet, regular exercise, maintain healthy weight")
 
-# Footer with important notes
-st.divider()
-st.caption("""
-**Note:** This tool provides a risk estimate based on statistical patterns. \
-It is not a medical diagnosis. Many factors contribute to diabetes risk, \
-including family history, genetics, and lifestyle factors not captured here. \
-Always consult a healthcare professional for personalized medical advice.
-""")
+st.caption("Note: This is a screening tool, not a medical diagnosis. Always consult a healthcare professional for personalized advice.")
